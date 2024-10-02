@@ -4,16 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Job;
 
 Route::get('/', function () {
-
-
     return view('home');
 });
 
 Route::get('/jobs', function () {
-    $jobs = Job::with('employer')->get();
+    $jobs = Job::with('employer')->simplePaginate(3);
 
     return view('jobs', [
-        'jobs' => Job::all()
+        'jobs' => $jobs
     ]);
 });
 
@@ -23,6 +21,13 @@ Route::get('/jobs/{id}', function ($id) {
     return view('job', ['job' => $job]);
 });
 
+Route::post('/jobs', function () {
+    request()->validate([
+        'employer_id' => ['required', 'exists:employers'],
+        'title'       => ['required'],
+        'salary'      => ['required'],
+    ]);
+});
 Route::get('/contact', function () {
     return view('contact');
 });
